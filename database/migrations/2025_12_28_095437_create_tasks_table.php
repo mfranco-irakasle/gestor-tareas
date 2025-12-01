@@ -13,8 +13,16 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
+            // Las tareas pertenecen a un proyecto, no directamente al usuario
+            $table->foreignId('project_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
             $table->string('name');
             $table->boolean('is_completed')->default(false);
+
+            // Un entero pequeño para prioridades (ej: 1 a 5)
+            $table->tinyInteger('priority')->unsigned()->default(1);
             $table->timestamps();
         });
     }

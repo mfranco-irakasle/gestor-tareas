@@ -7,20 +7,39 @@ use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    public function index() {
-        return view('tasks.index', ['tasks' => Task::all()]);
+    /** Guarda una nueva tarea vinculada a un proyecto */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|max:255',
+            'project_id' => 'required|exists:projects,id'
+        ]);
+
+        Task::create([
+            'name' => $request->name,
+            'project_id' => $request->project_id,
+            'is_completed' => false
+        ]);
+
+        // Redirige atrás (a la vista del proyecto)
+        return back()->with('success', 'Tarea añadida correctamente');
     }
-    public function store(Request $request) {
-        $request->validate(['name' => 'required|string|max:255']);
-        Task::create(['name' => $request->name]);
-        return redirect()->route('tasks.index');
+
+    /** Alterna el estado (completado/pendiente) */
+    public function update(Request $request, Task $task)
+    {
+        // Cambiamos el booleano al valor opuesto
+        $task->update([
+            'is_completed' => !$task->is_completed
+        ]);
+
+        return back();
     }
-    public function update(Task $task) {
-        $task->update(['is_completed' => true]);
-        return redirect()->route('tasks.index');
-    }
-    public function destroy(Task $task) {
+
+    /** Elimina la tarea */
+    public function destroy(Task $task)
+    {
         $task->delete();
-        return redirect()->route('tasks.index');
+        return back()->with('success', 'Tarea eliminada');
     }
 }

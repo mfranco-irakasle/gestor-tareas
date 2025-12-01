@@ -45,4 +45,16 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /** Relación 1:1 con Profile */
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
+
+    /** Relación 1:N con Projects */
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
 }
